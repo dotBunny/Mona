@@ -11,15 +11,20 @@ public static class Log
     
     public static void Variable(string variableName, string value)
     {
-        Console.WriteLine($"[{variableName}] {value}");
+        Console.WriteLine($"{GetPrefix()} [{variableName}] {value}");
     }
     public static void Message(string message)
     {
-        Console.WriteLine(message);
+        Console.WriteLine($"{GetPrefix()} {message}");
     }
 
     public static void Error(string message)
     {
-        Console.WriteLine($"[ERROR] {message}");
+        Console.WriteLine($"{GetPrefix()} ERROR {message}");
+    }
+
+    private static string GetPrefix()
+    {
+        return $"[MONA @ {DateTime.Now.ToLongTimeString()}] ";
     }
 }

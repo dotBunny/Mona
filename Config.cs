@@ -5,12 +5,22 @@ using System.Text.Json;
 
 public class Config
 {
+    public const int UpdateSleep = 1000 * 10;
+    public const int IssueSleep = 1000 * 15;
+    public const int StartSleep = 1000 * 2;
+    
     public string Application  { get; set; }
     public string Arguments { get; set; }
     public string BasePath { get; set; }
+    public string WorkingDirectory { get; set; }
     public string ProcessInfoPath { get; set; }
     public int SleepMilliseconds { get; set; }
-    
+    public int TimeoutSleepMilliseconds { get; set; }
+    public int StartSleepMilliseconds { get; set;  }
+
+    public bool CheckResponding { get; set; } = true;
+    public bool CheckHasExited { get; set; } = true;
+
     string _filePath;
     string _fileContent;
 
@@ -76,9 +86,24 @@ public class Config
             config.ProcessInfoPath = Path.Combine(config.BasePath, "mona.pid");
         }
 
+        if (string.IsNullOrEmpty(config.WorkingDirectory) || !Directory.Exists(config.WorkingDirectory))
+        {
+            config.WorkingDirectory = Directory.GetParent(config.Application).FullName;
+        }
+
         if (config.SleepMilliseconds <= 0)
         {
-            config.SleepMilliseconds = 1000 * 10;
+            config.SleepMilliseconds = UpdateSleep;
+        }
+
+        if (config.TimeoutSleepMilliseconds <= 0)
+        {
+            config.TimeoutSleepMilliseconds = IssueSleep;
+        }
+        
+        if (config.StartSleepMilliseconds <= 0)
+        {
+            config.StartSleepMilliseconds = StartSleep;
         }
     }
 
@@ -88,8 +113,15 @@ public class Config
         Log.Variable("Config.BasePath", BasePath);
         Log.Variable("Config.Application", Application);
         Log.Variable("Config.Arguments", Arguments);
+        Log.Variable("Config.WorkingDirectory", WorkingDirectory);
+        
         Log.Variable("Config.ProcessInfoPath", ProcessInfoPath);
         Log.Variable("Config.SleepMilliseconds", SleepMilliseconds.ToString());
+        Log.Variable("Config.TimeoutSleepMilliseconds", TimeoutSleepMilliseconds.ToString());
+        Log.Variable("Config.StartSleepMilliseconds", StartSleepMilliseconds.ToString());
+
+        Log.Variable("Config.CheckResponding", CheckResponding.ToString());
+        Log.Variable("Config.CheckHasExited", CheckHasExited.ToString());
     }
 
     public bool IsValid()

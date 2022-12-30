@@ -59,6 +59,10 @@ internal class Program
             {
                 Log.Message("Found valid server from PID file.");
             }
+            else
+            {
+                _monitor = null;    
+            }
         }
 
         // Main loop
@@ -72,10 +76,21 @@ internal class Program
 
             if (!_monitor.IsValid())
             {
-                Log.Message("Restarting!");
-                Restart();
-            }
+                Log.Message($"Monitor has reported an issue, waiting {Settings.TimeoutSleepMilliseconds} to see if it resolves it self.");
+                Thread.Sleep(Settings.TimeoutSleepMilliseconds);
 
+                if (!_monitor.IsValid())
+                {
+                    Log.Message("Restarting!");
+                    Shutdown();
+                    continue;
+                }
+            }
+            else
+            {
+                Log.Message("Heartbeat");    
+            }
+            
             Thread.Sleep(Settings.SleepMilliseconds);
         }
 
@@ -88,23 +103,21 @@ internal class Program
         Process startProcess = new Process();
 
         startProcess.StartInfo = new ProcessStartInfo(Settings.Application, Settings.Arguments);
+        startProcess.StartInfo.WorkingDirectory = Settings.WorkingDirectory;
+        //startProcess.StartInfo.Environment
         startProcess.Start();
-        Thread.Sleep(2000);
+        Thread.Sleep(Settings.StartSleepMilliseconds);
         
         _monitor = new Monitor(startProcess);
         Log.Message($"Started with PID of {startProcess.Id.ToString()}");
         File.WriteAllText(Settings.ProcessInfoPath, startProcess.Id.ToString());
     }
 
-    private static void Restart()
-    {
-        Shutdown();
-        Start();
-    }
-
     private static void Shutdown()
     {
         if (_monitor == null) return;
+        
         _monitor.Kill();
+        _monitor = null;
     }
 }

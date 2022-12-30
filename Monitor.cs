@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Mona;
 
@@ -20,7 +21,19 @@ public class Monitor
 
     public bool IsValid()
     {
-        return _process is { Responding: true, HasExited: false };
+        if (_process == null) return false;
+
+        if (Program.Settings.CheckResponding && !_process.Responding)
+        {
+            return false;
+        }
+
+        if (Program.Settings.CheckHasExited && _process.HasExited)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public void Kill()

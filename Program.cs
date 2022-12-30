@@ -52,7 +52,7 @@ internal class Program
 
         // Get existing running server, just in case its still there and this app failed?
         var pid = Monitor.GetPIDFromFile();
-        if (pid != Monitor.BAD_PID)
+        if (pid != Monitor.BAD_PID && Monitor.IsValidPID(pid))
         {
             _monitor = new Monitor(pid);
             if (_monitor.IsValid())
@@ -86,9 +86,13 @@ internal class Program
     private static void Start()
     {
         Process startProcess = new Process();
+
         startProcess.StartInfo = new ProcessStartInfo(Settings.Application, Settings.Arguments);
         startProcess.Start();
+        Thread.Sleep(2000);
+        
         _monitor = new Monitor(startProcess);
+        Log.Message($"Started with PID of {startProcess.Id.ToString()}");
         File.WriteAllText(Settings.ProcessInfoPath, startProcess.Id.ToString());
     }
 

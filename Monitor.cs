@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.SymbolStore;
 
 namespace Mona;
 
@@ -42,5 +43,19 @@ public class Monitor
             Log.Message("PID not found.");
         }
         return pid;
+    }
+
+    public static bool IsValidPID(int pid)
+    {
+        try
+        {
+            Process.GetProcessById(pid);
+        }
+        catch
+        {
+            return false;
+        }
+
+        return true;
     }
 }

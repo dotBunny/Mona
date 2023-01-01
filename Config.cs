@@ -5,8 +5,8 @@ using System.Text.Json;
 
 public class Config
 {
-    public const int UpdateSleep = 1000 * 10;
-    public const int IssueSleep = 1000 * 15;
+    public const int UpdateSleep = 1000 * 1;
+    public const int IssueSleep = 1000 * 10;
     public const int StartSleep = 1000 * 2;
     
     public string Application  { get; set; }

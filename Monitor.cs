@@ -36,9 +36,19 @@ public class Monitor
         return true;
     }
 
+    public void Refresh()
+    {
+        if (_process == null) return;
+        _process.Refresh();
+    }
+
     public void Kill()
     {
+        // _process.CloseMainWindow();
+        // _process.Close();
+        // Thread.Sleep(500);
         _process.Kill(true);
+        Thread.Sleep(500);
     }
     
     public static int GetPIDFromFile()

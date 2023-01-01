@@ -16,10 +16,17 @@ internal class Program
     {
         Log.Clear();
 
-        // Handle custom config path as an argument
-        if (args.Length > 1 && File.Exists(args[1]))
+        Log.Message("Arguments Found:");
+        for (int i = 0; i < args.Length; i++)
         {
-            Settings = Config.Get(args[1]);
+            Log.Message($"{i}: {args[i]}");
+        }
+        
+        // Handle custom config path as an argument
+        if (args.Length >= 1 && File.Exists(args[0]))
+        {
+            Log.Message($"Attempting to use config at {args[0]} ...");
+            Settings = Config.Get(args[0]);
         }
         else
         {
